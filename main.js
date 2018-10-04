@@ -1,50 +1,78 @@
-let n
-init()
-var Timer = setTimer()
+let $buttons = $('#buttonWrapper>button')
+let $slides = $('#slides')
+let $images = $slides.children('img')
+let current = 0
 
-//自动无缝轮播
-function setTimer(){
-    return setInterval(() => {
-        makeLeave($(`.images > img:nth-child(${x(n)})`)).one('transitionend', (e) => {
-            makeEnter($(e.currentTarget));
-        })
-        makeCurrent($(`.images > img:nth-child(${x(n + 1)})`))
-        n ++
-    }, 3000);
-}
+makeFakeSlides()
+$slides.css({transform:'translateX(-450px)'})
+bindEvents()
 
-//控制n为1~4
-function x(n) {
-	if (n > 4) {
-		n = n % 4;
-		if (n === 0) {
-			n = 4;
-		}
-	} // n = 1 2 3 4
-	return n;
-}
-
-//初始化
-function init() {
-	n = 1;
-	$(`.images > img:nth-child(${n})`).addClass('current').siblings().addClass('enter');
-}
-
-//轮播图片进出改变样式
-function makeCurrent($node) {
-	return $node.removeClass('enter leave').addClass('current');
-}
-function makeLeave($node) {
-	return $node.removeClass('enter current').addClass('leave');
-}
-function makeEnter($node) {
-	return $node.removeClass('leave current').addClass('enter');
-}
-
-//鼠标进入停止轮播
-$('.window').on('mouseenter',function(){
-    window.clearInterval(Timer)
+$(next).on('click', function(){
+  goToSlide(current+1)
 })
-$('.window').on('mouseleave',function(){
-    Timer = setTimer()
+$(previous).on('click', function(){
+  goToSlide(current-1)
 })
+
+let timer = setInterval(function(){
+  goToSlide(current+1)
+},2000)
+
+$('.container').on('mouseenter', function(){
+  window.clearInterval(timer)
+}).on('mouseleave', function(){
+  timer = setInterval(function(){
+    goToSlide(current+1)
+  },2000)
+})
+
+function bindEvents(){
+  $('#buttonWrapper').on('click', 'button', function(e){
+    let $button = $(e.currentTarget) 
+    let index = $button.index()
+    goToSlide(index)
+  })
+}
+
+//重要
+function goToSlide(index){
+  if(index > $buttons.length-1){
+    index = 0
+  }else if(index <0){
+    index = $buttons.length - 1
+  }
+  console.log('current', 'index')
+  console.log(current, index)
+  if(current === $buttons.length -1 && index === 0){
+    // 最后一张到第一张
+    console.log('here')
+    $slides.css({transform:`translateX(${-($buttons.length + 1) * 450}px)`})
+      .one('transitionend', function(){
+        $slides.hide()
+        $slides.offset() // .offset() 可以触发 re-layout，这是一个高级技术，删掉这行你就会发现 bug，所以只能加上这一行。
+        // 不要写邮件来问我为什么要写 .offset，你自己注释掉上面一行看最后一张到第一张的动画，就知道为什么要加 offset() 了。
+        $slides.css({transform:`translateX(${-(index+1)*450}px)`}).show()
+      })
+
+  }else if(current === 0 && index === $buttons.length - 1){
+    // 第一张到最后一张
+    $slides.css({transform:`translateX(0px)`})
+      .one('transitionend', function(){
+        $slides.hide().offset()
+        $slides.css({transform:`translateX(${-(index+1)*450}px)`}).show()
+      })
+
+  }else{
+    $slides.css({transform:`translateX(${- (index+1) * 450}px)`})
+  }
+  current = index
+}
+
+// 把首尾的图片克隆并放到最后一位和第一位
+function makeFakeSlides(){
+  let $firstCopy = $images.eq(0).clone(true)
+  let $lastCopy = $images.eq($images.length-1).clone(true)
+
+  $slides.append($firstCopy)
+  $slides.prepend($lastCopy)
+}

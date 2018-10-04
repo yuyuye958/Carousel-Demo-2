@@ -11,15 +11,25 @@
 </head>
 
 <body>
-    <div class="window">
-        <div class="images" id=images>
-            <img src="./img/1.jpg" width=400 alt="图片1">
-            <img src="./img/2.jpg" width=400 alt="图片2">
-            <img src="./img/3.jpg" width=400 alt="图片3">
-            <img src="./img/4.jpg" width=400 alt="图片4">
-        </div>  
-    </div>
+    <div class="container">
+        <div class="window">
+            <div class="images" id="slides">
+                <img src="./img/1.jpg" width="450" height="300" alt="图片1">
+                <img src="./img/2.jpg" width="450" height="300" alt="图片2">
+                <img src="./img/3.jpg" width="450" height="300" alt="图片3">
+                <img src="./img/4.jpg" width="450" height="300" alt="图片4">
+            </div>
+            <a class="arrow" id="previous" href="#">&lt;</a>
+            <a class="arrow" id="next" href="#">&gt;</a>
+            <div id=buttonWrapper>
+                <button></button>
+                <button></button>
+                <button></button>
+                <button></button>
+            </div>
+        </div>
 
+    </div>
 
 
     <script src="./main.js"></script>
